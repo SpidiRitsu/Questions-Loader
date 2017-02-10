@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>. . .</title>
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#clearBtn").click(function() {
+				$("textarea").val("");
+				$("input[name=poprawnaOdpowiedz]:checked").prop("checked", false);
+			});
+			$("#sendBtn").click(function() {
+				let response = {
+					pytanie: $("#pytanie").val(),
+					odpowiedz_A: $("#odpA").val(),
+					odpowiedz_B: $("#odpB").val(),
+					odpowiedz_C: $("#odpC").val(),
+					odpowiedz_D: $("#odpD").val(),
+					poprawna_odpowiedz: undefined
+				};
+				response["poprawna_odpowiedz"] = $("input[name=poprawnaOdpowiedz]:checked").val();
+				let tag = $("#przedmiot").find(":selected").val();
+				let noSpaces = false;
+
+				for(key in response) {
+					if (response[key] === "" || response[key] === undefined) {
+						noSpaces = true;
+					}
+				}
+
+				if (!noSpaces) {
+					$.post("/sendJSON", {"json": response, "tag": tag});
+					$("#clearBtn").click();
+					noSpaces = false;
+				}
+				else {
+					console.log("SPACJA!");
+				}
+			});
+		});
+	</script>
+
+	<style type="text/css">
+		body {
+			background-color: black;
+			color: #fff;
+		}
+		textarea, select {
+			color: black;
+		}
+		.radio, .radio-inline {
+			font-size: 18px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container text-center">
+		<h2>Pytanie z <select id="przedmiot">
+			<option value="historia">Historii</option>
+			<option value="wos">WOS-u</option>
+		</select></h2>
+		<textarea cols="50" id="pytanie"></textarea>
+		<div class="row">
+			<div class="col-xs-12 col-md-6">
+				<h2>Odpowiedz A)</h2>
+				<textarea id="odpA"></textarea>
+			</div>
+			<div class="col-xs-12 col-md-6">
+				<h2>Odpowiedz B)</h2>
+				<textarea id="odpB"></textarea>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-md-6">
+				<h2>Odpowiedz C)</h2>
+				<textarea id="odpC"></textarea>
+			</div>
+			<div class="col-xs-12 col-md-6">
+				<h2>Odpowiedz D)</h2>
+				<textarea id="odpD"></textarea>
+			</div>
+		</div>
+		<h2>Poprawna odpowiedz</h2>
+		<label class="radio-inline"><input type="radio" name="poprawnaOdpowiedz" value="1">Odpowiedz 1 (A)</label>
+		<label class="radio-inline"><input type="radio" name="poprawnaOdpowiedz" value="2">Odpowiedz 2 (B)</label>
+		<label class="radio-inline"><input type="radio" name="poprawnaOdpowiedz" value="3">Odpowiedz 3 (C)</label>
+		<label class="radio-inline"><input type="radio" name="poprawnaOdpowiedz" value="4">Odpowiedz 4 (D)</label>
+		<br><br>
+		<div class="row">
+			<button id="sendBtn" type="button" class="btn btn-primary btn-lg">Wyslij</button>
+			<button id="clearBtn" type="button" class="btn btn-danger btn-lg">WYCZYŚĆ</button>
+		</div>
+	</div>
+</body>
+</html>
