@@ -15,10 +15,15 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 	<script type="text/javascript">
+		function consoleError(text, color="red") {
+			$("#console").css("color", color).text(text);
+		};
+
 		$(document).ready(function() {
 			$("#clearBtn").click(function() {
 				$("textarea").val("");
 				$("input[name=poprawnaOdpowiedz]:checked").prop("checked", false);
+				consoleError("Wyczyszczono okienka!", "greenyellow");
 			});
 			$("#sendBtn").click(function() {
 				let response = {
@@ -40,12 +45,15 @@
 				}
 
 				if (!noSpaces) {
-					$.post("/sendJSON", {"json": response, "tag": tag});
+					$.post("/sendJSON", {"pytanie": response, "tag": tag}, function (result) {
+						$("#questionsCounter").text(`Obecna liczba pytań: ${result.length}`);
+					});
 					$("#clearBtn").click();
 					noSpaces = false;
+					consoleError("Pytanie zostało wysłane do bazy danych!", "greenyellow");
 				}
 				else {
-					console.log("SPACJA!");
+					consoleError("Uzupełnij puste okienka!");
 				}
 			});
 		});
@@ -61,6 +69,9 @@
 		}
 		.radio, .radio-inline {
 			font-size: 18px;
+		}
+		#console {
+			color: greenyellow;
 		}
 	</style>
 </head>
@@ -101,6 +112,8 @@
 			<button id="sendBtn" type="button" class="btn btn-primary btn-lg">Wyslij</button>
 			<button id="clearBtn" type="button" class="btn btn-danger btn-lg">WYCZYŚĆ</button>
 		</div>
+		<h2><span id="questionsCounter">Wyślij pytanie by zobaczyć obecną ilość pytań!</span></h2>
+		<h2><span id="console"></span></h2>
 	</div>
 </body>
 </html>

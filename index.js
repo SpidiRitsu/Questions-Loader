@@ -1,5 +1,6 @@
 const express = require('express'),
 	bodyParser = require('body-parser'),
+	dotenv = require('dotenv').config(),
 	mongo = require('mongodb').MongoClient;
 
 let dbuser = process.env.MONGOLAB_USER,
@@ -21,20 +22,22 @@ app.get('*', function (req, res) {
 });
 
 app.post('/sendJSON', function (req, res) {
-	let json = req.body.json;
+	let json = req.body.pytanie;
 	let tag = req.body.tag;
 	console.log(json);
-	console.log(tag);
 	mongo.connect(mongoUrl, function (err, db) {
 		if (err) throw err;
 		db.createCollection(tag);
 		let collection = db.collection(tag);
 		collection.insert({json}, function (err, result) {
 			if (err) throw err;
-			console.log("done!");
+			console.log("Pytanie zostało wysłane do bazy danych. . .");
+		});
+		collection.find({}).toArray(function (err, result) {
+			if (err) throw err;
+			res.send(result);
 		});
 	});
-	res.end();
 });
 
 app.listen(port, function() {
